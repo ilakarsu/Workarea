@@ -1,3 +1,4 @@
+
 # WORK IN PROGRESS
 -----
 # Arch Linux installation
@@ -56,7 +57,9 @@ For a basic installation, we need three partitions:
  2. SWAP (Personal preference, I usually go with 2-3GB)
  3. Root (Remainder of your available storage space)
 
-However, since we are going to include the SWAP partition in our main partition, we will use two partitions only: boot and root. The latter will be encrypted.
+However, since we are going to include the SWAP partition in our main partition, we will use two partitions only: boot and root. The latter will be encrypted. See graph below:
+
+TODO
 
 We will use fdisk, you can also achieve the same results using cfdisk or any other partitioning tool of your choice.
 
@@ -77,9 +80,11 @@ Before we encrypt anything, we will run some commands and choose our cipher.
 	modprobe dm-crypt
 	cryptsetup benchmark
 
-The last command will run some default ciphers and test them. It will yield an overview of the test results. Pick the one, you feel is right for you. E.g.:
+The last command will run some default ciphers and test them. It will yield an overview of the test results. Pick the one, you feel is right for you. Note that we don't use any special options below, using the default parameters. E.g.:
 
-	cryptsetup -c aesxts-plain -y -s 512 luksformat /dev/[devicename]
+	cryptsetup -v /dev/[devicename]
+	# which is equivalent to this:
+	cryptsetup -v --type luks --cipher aes-xts-plain64 --key-size 256 --hash sha256 --iter-time 2000 --use-urandom --verify-passphrase luksFormat /dev/[devicename]
 
 This will show a warning and we have to confirm by typing in: 
 
@@ -89,30 +94,43 @@ Next, define a password for your encrypted storage.
 
 	<password> <enter>
 
-To access our encrypted partition, we can run:
+To access our encrypted partition,  we must first open it. This procedure is done using the passphrase we have defined in the previous step. Our unlocked partition will be handled by the Kernel using the device mapper, in order to avoid confusion when writing into the partition. This basically alerts our kernel that the device will be available under its new mapped name::
 
-	cryptsetup luksOpen /dev/[devicename] lvm
+	cryptsetup open /dev/[devicename] [mapped_name]
+	cryptsetup open /dev/vda2 cryptroot
 
 Now we have full access to our encrypted storage and can run all the commands as usual. For instance, try to ls and see the output.
 
 ##### Organizing the volumes
-Next, we need to create our physical, logical volumes and volume groups.
+Next, we need to create our physical volumes, logical volumes and volume groups.
 
-	pvcreate /dev/mapper/lvm
-	vgcreate main /dev/mapper/lvm
+	pvcreate /dev/mapper/cryptroot
+	vgcreate main /dev/mapper/cryptroot
 	lvcreate -L 2GB -n swap main
 	lvcreate -l 100%FREE -n root main
 
 #### Format the partitions
-So we have a main volume group that cointains two logical volumes, one for the *swap* partition and one for the *root* partition. This volume group resides on the physical volume /dev/mapper/lvm.
+So we have a main volume group that cointains two logical volumes, one for the *swap* partition and one for the *root* partition. This volume group resides on the physical volume /dev/mapper/cryptroot.
 
 Time to format our volumes.
 
-	mkfs.vfat -n BOOT /dev/vda1
+	mkfs.fat -F32 -n BOOT /dev/vda1
 	mkfs.btrfs -L root /dev/mapper/main-root
-	mkswap -L swap /dev/mapper/main-swap
-	swapon
- 
+
+##### SwapFile
+Since we are using a btrfs and our swapfile will also reside in this partition, we need to follow some extra steps in order to have a fully functional swapfile:
+
+	# btrfs specific swapfile creation
+	cd /mnt/var/cache
+	truncate -s 0 swapfile
+	chattr +C swapfile
+	btrfs property set swapfile compression none
+	fallocate -l 2G swapfile
+	chmod 600 swapfile
+	mkswap swapfile
+	swapon swapfile
+	cd /
+
  #### Mounting the partitions
 
 Since everything has been created and is ready for mounting, lets continue as follows:
@@ -182,7 +200,16 @@ Not going into the details of all these packages, they can easily be googled, ne
 
 
 # Sources
+#### Wiki-Pages
+[Entire system encryption on a BtrFS system](https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#Overview)
+[Arch Linux dm-crypt](https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system)
+
+#### YouTube
 [Install Arch Linux with encrypted volume](https://www.youtube.com/watch?v=x4ZFZ9B0t-8&t=1262s)
 [Install Arch Linux with BtrFS](https://www.youtube.com/watch?v=sm_fuBeaOqE&t=596s)
+
+#### Reddit
 [Reddit comment explaning a more elaborate BtrFS layout](https://www.reddit.com/r/archlinux/comments/fkcamq/noob_btrfs_subvolume_layout_help/fkt6wqs/?context=1000)
+
+#### GitHub
 [Note of pkulak (redditor) testing the advanced BtrFS setup](https://gist.githubusercontent.com/pkulak/93270e06ebed35ddc51f4c64bcc3b9b6/raw/e3263c2b341f585b89883c023261fdd810f07ba7/encrypted_btrfs_snapper_notes.sh)
