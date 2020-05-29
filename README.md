@@ -325,8 +325,10 @@ Hopefully, your system is up and running and everything is configured as describ
 
 # Sources
 #### Wiki-Pages
-[Entire system encryption on a BtrFS system](https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#Overview)
-[Arch Linux dm-crypt](https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system)
+[Dm-crypt](https://wiki.archlinux.org/index.php/Dm-crypt/Encrypting_an_entire_system#Overview)
+[BtrFS](https://wiki.archlinux.org/index.php/Btrfs#Creating_a_subvolume)
+[Snapper](https://wiki.archlinux.org/index.php/Snapper#Simple_snapshots)
+[BtrFS swapfile](https://btrfs.wiki.kernel.org/index.php/Manpage/btrfs%285%29#SWAPFILE_SUPPORT)
 
 #### YouTube
 [Install Arch Linux with encrypted volume](https://www.youtube.com/watch?v=x4ZFZ9B0t-8&t=1262s)
