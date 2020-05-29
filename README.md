@@ -333,6 +333,7 @@ Hopefully, your system is up and running and everything is configured as describ
 #### YouTube
 [Install Arch Linux with encrypted volume](https://www.youtube.com/watch?v=x4ZFZ9B0t-8&t=1262s)
 [Install Arch Linux with BtrFS](https://www.youtube.com/watch?v=sm_fuBeaOqE&t=596s)
+[Customize KDE](https://www.youtube.com/watch?v=uyz4-KZOzyI&t=10s)
 
 #### Reddit
 [Reddit comment explaning a more elaborate BtrFS layout](https://www.reddit.com/r/archlinux/comments/fkcamq/noob_btrfs_subvolume_layout_help/fkt6wqs/?context=1000)
@@ -341,3 +342,6 @@ Hopefully, your system is up and running and everything is configured as describ
 [Note of pkulak (redditor) testing the advanced BtrFS setup](https://gist.githubusercontent.com/pkulak/93270e06ebed35ddc51f4c64bcc3b9b6/raw/e3263c2b341f585b89883c023261fdd810f07ba7/encrypted_btrfs_snapper_notes.sh)
 
 [Full walkthrough by Angel encrypted simple BtrFS setup](https://gist.githubusercontent.com/ansulev/7cdf38a3d387599adf9addd248b09db8/raw/ae318dc9407e0a8b0e7be869c0383edd172599e1/install-arch-linux-on-btrfs-subvolume-inside-luks)
+
+#### Misc
+[EF Installation guide (YouTube transcript)](https://ermannoferrari.net/arch-linux-install-with-btrfs-snapper)
